@@ -1,0 +1,1125 @@
+
+<!-- saved from url=(0064)http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=TrainTo -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>New Jersey Transit</title>
+
+<meta content="New Jersey Transit, NJ TRANSIT, transportation, Mass Transit, commuting, trains, bus, New Jersey, schedules, fares, travel">
+<meta name="Description" content="NJ TRANSIT is New Jersey&#39;s public transportation corporation. Its mission is to provide safe, reliable, convenient and cost-effective transit service with a skilled team of employees, dedicated to our customers&#39; needs and committed to excellence">
+<link href="http://www.njtransit.com/styles/datePicker.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="http://www.njtransit.com/javascript/date.js"></script>
+<script type="text/javascript" src="http://www.njtransit.com/javascript/jquery2.js"></script>
+<script type="text/javascript" src="http://www.njtransit.com/javascript/jquery.datePicker.js"></script>
+<script type="text/javascript" src="http://www.njtransit.com/javascript/main.js"></script>
+<script language="Javascript1.2" src="http://www.njtransit.com/javascript/validate.js"></script>
+<script language="javascript">
+      function showStationInfo(lstStationList) {
+           
+            if (lstStationList.selectedIndex > 0) {
+                  var selectedvalue = lstStationList.options[lstStationList.selectedIndex].value;
+                  var atisId = selectedvalue.substring(0,selectedvalue.indexOf("_"));
+                  newwin=window.open('/rg/rg_servlet.srv?hdnPageAction=TrainStationInfoFrom&selStation='+escape(atisId),'name','status=no,location=no,toolbar=no,menubar=no,resizable=yes,scrollbars=yes,height=500,width=800');
+                  newwin.focus();
+            }
+            else {
+            	alert("Please select a station");
+            }
+      }
+      
+      /*function showHolidayWindow() {
+            self.name="parentWnd";
+            newwin=window.open('sf_servlet.srv?hdnPageAction=TrainSchedulesHolidayTo&parentWnd=parentWnd','name','resizable=yes,scrollbars=yes,height=350,width=400');
+            newwin.focus();
+      }*/
+      
+      function showMapWindow() {
+            newwin=window.open('sf_servlet.srv?hdnPageAction=TrainSchedulesMapTo','name','resizable=yes,scrollbars=yes,height=1300,width=809');
+            newwin.focus();
+      }
+      
+      function check(){	
+            if(!(isSelected(document.frm_tr_schedules.selOrigin,"Origin Station"))
+            ||!(isSelected(document.frm_tr_schedules.selDestination,"Destination Station"))){
+            //||!(isSelected(document.frm_tr_schedules.selDay,"Day of Travel"))){
+                  return false;
+            }
+            if(document.frm_tr_schedules.selOrigin.options[document.frm_tr_schedules.selOrigin.selectedIndex].text == document.frm_tr_schedules.selDestination.options[document.frm_tr_schedules.selDestination.selectedIndex].text){
+            	alert("Please select different stations for Origin and Destination to view Train Schedule");
+            	return false;
+            }
+            //if(!isNotValue(document.frm_tr_schedules.selDay,"-","Day of Travel")) {
+            //	return false;
+            //}
+            
+            //origin = document.frm_tr_schedules.selOrigin.options[document.frm_tr_schedules.selOrigin.selectedIndex].value;
+            //a_orig = new Array();
+            //a_orig = origin.split("_");
+      
+            //destination = document.frm_tr_schedules.selDestination.options[document.frm_tr_schedules.selDestination.selectedIndex].value;
+            //a_dest = new Array();
+            //a_dest = destination.split("_");
+      
+            //if((a_orig[1] == "ATLC" && a_dest[1] != "ATLC") || (a_dest[1] == "ATLC" && a_orig[1] != "ATLC")){
+            //      alert("You cannot transfer to/from the Atlantic City Line.");
+            //      return false;
+            //}
+            
+            document.frm_tr_schedules.OriginDescription.value = document.frm_tr_schedules.selOrigin.options[document.frm_tr_schedules.selOrigin.selectedIndex].text;
+            document.frm_tr_schedules.DestDescription.value = document.frm_tr_schedules.selDestination.options[document.frm_tr_schedules.selDestination.selectedIndex].text;
+            //document.frm_tr_schedules.DayDescription.value = document.frm_tr_schedules.selDay.options[document.frm_tr_schedules.selDay.selectedIndex].text;
+            
+			var origVal = document.frm_tr_schedules.OriginDescription.value;
+			var destVal = document.frm_tr_schedules.DestDescription.value;
+			
+			//This is for Airtrain Shutdown 
+			//if(origVal == 'Newark Airport' || destVal == 'Newark Airport'){
+			 //	alert("Port Authority’s AirTrain Repairs are completed and rail service on the NEC and NJCL will resume to/from Airport Station effective Thursday, July 3, 2014. Click HERE for details.");
+			//}
+
+            return true;
+      }
+      
+	function submitForm(){
+		document.frm_tr_timetable.RouteDescription.value = document.frm_tr_timetable.selRoute.options[document.frm_tr_timetable.selRoute.selectedIndex].text;
+		document.frm_tr_timetable.DirectionDescription.value = document.frm_tr_timetable.selDirection.options[document.frm_tr_timetable.selDirection.selectedIndex].text;
+		document.frm_tr_timetable.ServiceTypeDescription.value = document.frm_tr_timetable.selServiceType.options[document.frm_tr_timetable.selServiceType.selectedIndex].text;
+		 
+		return true;
+		 
+	}      
+	
+	function deleteTrip(tripid){
+	 	 if(confirm("Are you sure you want to delete the selected trip?")){
+		 	 $.ajax({
+			  url: "/sf/sf_servlet.srv?hdnPageAction=TrainTripDeleteTo&TripId="+tripid,
+			  cache: true,
+			  success: function(html){
+			  location.reload();
+			  //alert(html);
+			  }
+			});
+		}
+		return;
+	 }
+</script>
+<style type="text/css">
+
+.AccordionSchedules {
+	/*background:url(http://www.njtransit.com/images/sf_tr_train_schedules.jpg) top left no-repeat;*/
+	background-color: #e9e9eb;
+	overflow: hidden;
+	font-family:Arial,sans-serif;
+	width:325px; 
+	height:220px; 
+	margin-top:5px; 
+	margin-right:7px; 
+	margin-bottom:5px; 
+}
+.AccordionTimeTables {
+	/*background:url(http://www.njtransit.com/images/sf_tr_train_timetables.jpg) top left no-repeat;*/ 
+	background-color: #e9e9eb; 
+	overflow: hidden;
+	font-family:Arial,sans-serif;
+	width:260px; 
+	height:220px; 
+	margin-top:5px; 
+	/*margin-right:8px; */
+	margin-bottom:5px; 
+}
+.AccordionRecentTrips {
+	/*background:url(http://www.njtransit.com/images/sf_tr_train_recent_trips.jpg) top left no-repeat;*/ 
+	background-color: #e9e9eb; 
+	overflow: hidden;
+	font-family:Arial,sans-serif;
+	width:360px; 
+	height:220px; 
+	margin-top:5px; 
+	margin-right:8px;
+	margin-bottom:5px; 
+}
+.AccordionCurrentSchedules {
+	/*background:url(http://www.njtransit.com/images/sf_tr_train_current_schedules.jpg) top left no-repeat;*/ 
+	background-color: #e9e9eb; 
+	overflow: hidden;
+	font-family:Arial,sans-serif;
+	width:960px; 
+	height:90px;
+	margin-bottom:5px; 
+}
+.AccordionUpcomingSchedules {
+	/*background:url(http://www.njtransit.com/images/sf_tr_train_upcoming_schedules.jpg) top left no-repeat;*/ 
+	background-color: #e9e9eb; 
+	overflow: hidden;
+	font-family:Arial,sans-serif;
+	width:960px; 
+	height:118px;
+}
+.AccordionPanel {
+	margin: 0px;
+	padding: 0px;
+	/*border: solid 1px #9ac1c9;*/
+	font-family:Arial,sans-serif;
+}
+.AccordionPanelTab {
+	padding:6px 6px 8px 6px; 
+	*padding:6px 6px 2px 6px; 
+	font-weight:bold; 
+	margin-top:0px; 
+	/*cursor:pointer;*/
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	/*background:url(http://www.njtransit.com/images/acc_header_over.gif);*/
+	text-decoration:none;
+	color:#094b7c;
+}
+.AccordionPanelContent {
+	overflow: auto;
+	/*height: 400px;*/
+	margin: 5px;
+	*margin:0px 5px 5px 5px;
+	padding: 0px 0px 0px 0px;
+	font-family:Arial,sans-serif;
+}
+
+div.content-module{ 
+background:url(http://www.njtransit.com/images/sf_tr_train_text.jpg) top left no-repeat; 
+width:960px; 
+height:350px; 
+background-position: 0px 0px; 
+background-repeat: no-repeat; 
+margin:5px 0px 5px 0px;
+min-height: 50px; 
+} 
+</style>
+
+<script type="text/javascript" src="http://www.njtransit.com/javascript/thickbox.js"></script>
+<link href="http://www.njtransit.com/styles/thickbox.css" rel="stylesheet" type="text/css" media="screen">
+
+<link href="http://www.njtransit.com/styles/print.css" rel="stylesheet" type="text/css" media="print">
+<link href="http://www.njtransit.com/styles/styles_redesign.css" rel="stylesheet" type="text/css" media="screen">
+<link href="http://www.njtransit.com/styles/main.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" type="text/css" href="http://www.njtransit.com/styles/SpryMenuBar.css">
+<script type="text/javascript" src="http://www.njtransit.com//javascript/SpryMenuBar.js"></script>
+<script language="JavaScript" src="http://www.njtransit.com//javascript/helper.js"></script>
+
+<link type="text/css" rel="stylesheet" charset="UTF-8" href="https://translate.googleapis.com/translate_static/css/translateelement.css"><script type="text/javascript" charset="UTF-8" src="https://translate.googleapis.com/translate_static/js/element/main.js"></script><style>@-webkit-keyframes popzrpoxeuikymnhnswsfjnulnbxriylhbaukprpb {50% {-webkit-transform:scale(1.2);}100% {-webkit-transform:scale(1);}}@keyframes popzrpoxeuikymnhnswsfjnulnbxriylhbaukprpb {50% {-webkit-transform:scale(1.2);transform:scale(1.2);}100% {-webkit-transform:scale(1);transform:scale(1);}}#zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;border:solid 2px #fff !important;box-sizing:content-box !important;color:#fff !important;display:block !important;height:auto !important;margin:0 !important;opacity:0.9 !important;padding:7px 10px !important;position:fixed !important;visibility:visible !important;width:auto !important;z-index:2147483647 !important;-webkit-border-radius:5px !important;-webkit-box-shadow:0px 0px 20px #000 !important;-webkit-box-sizing:content-box !important;}.zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb-blocked{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;color:#AAA !important;display:inline !important;text-decoration:line-through !important;}#zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb br{display:block !important;padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;}#zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb span{background:transparent !important;padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;}#zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb div{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;border:0 !important;margin:0 !important;padding:0 !important;width:auto !important;letter-spacing:normal !important;font:13px Arial,Helvetica !important;text-align:left !important;text-shadow:none !important;text-transform:none !important;word-spacing:normal !important;}#zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb a{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;font-weight:normal !important;background:none !important;text-decoration:underline !important;color:#fff !important;}a#zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb-gear{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;text-decoration:none !important;position:absolute !important;display:none !important;font-size:20px !important;width:20px !important;height:20px !important;line-height:20px !important;text-align:center !important;background-color:rgba(255,255,255,.8) !important;background-image:url(chrome-extension://mlomiejdfkolichcflejclcbmpeaniij/data/images/gear.svg) !important;background-size:16px 16px !important;background-position:center center !important;background-repeat:no-repeat !important;text-decoration:none !important;}a#zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb-gear:hover{-webkit-animation-name:popzrpoxeuikymnhnswsfjnulnbxriylhbaukprpb !important;animation-name:popzrpoxeuikymnhnswsfjnulnbxriylhbaukprpb !important;-webkit-animation-duration:0.3s !important;animation-duration:0.3s !important;}#zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb:hover #zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb-gear{text-decoration:none !important;display:inline-block !important;}@media print{#zrpoxeuikymnhnswsfjnulnbxriylhbaukprpb{display:none !important;}}</style><script type="text/javascript" charset="UTF-8" src="https://translate.googleapis.com/translate_static/js/element/26/element_main.js"></script></head>
+<body>
+
+<!--/**  * @ (#) header.jsp  * * Copyright (c) 2005 NJ Transit * One Penn Plaza East * Newark, NJ 06101 * THIS  UNPUBLISHED WORK,  FIRST CREATED  IN 2005  AND UPDATED THEREAFTER, * IS PROTECTED  UNDER THE  COPYRIGHT LAWS  OF THE UNITED STATES  AND OF  * OTHER COUNTRIES  THROUGHOUT THE WORLD. USE, DISASSEMBLY,  REPRODUCTION,  * DISTRIBUTION,  ETC.  WITHOUT THE   EXPRESS  WRITTEN   CONSENT   OF   * NJ TRANSIT IS PROHIBITED.   * COPYRIGHT NJ TRANSIT 2005 ALL  RIGHTS RESERVED.   * INFORMATION  CONTAINED   HEREIN  IS PROPRIETARY AND CONFIDENTIAL * AND  IMPROPER USE OR DISCLOSURE MAY RESULT IN CIVIL AND PENAL SANCTIONS * * This file contains the top level menu items and the underlying dhtml menu items. *  * @author  Arun Nunna * * @version 1.0  */ --><!-- ************** HOSTNAME: vm12.njtransit.com ************** --><!--%%%%%%%%%%%% MyCSSMenu Styles [Keep in head for full validation!] %%%%%%%%%%%--><style type="text/css">/*!!!!!!!!!!! MyCSSMenu Core CSS [Do Not Modify!] !!!!!!!!!!!!!*/.qmmc .qmdivider{display:block;font-size:1px;border-width:0px;border-style:solid;position:relative;z-index:1;}.qmmc .qmdividery{float:left;width:0px;}.qmmc .qmtitle{display:block;cursor:default;white-space:nowrap;position:relative;z-index:1;}.qmclear {font-size:1px;height:0px;width:0px;clear:left;line-height:0px;display:block;float:none !important;}.qmmc {position:relative;zoom:1;z-index:10;}.qmmc a, .qmmc li {float:left;display:block;white-space:nowrap;position:relative;z-index:1;}.qmmc div a, .qmmc ul a, .qmmc ul li {float:none;}.qmsh div a {float:left;}.qmmc div{visibility:hidden;position:absolute;}.qmmc li {z-index:auto;}.qmmc ul {left:-10000px;position:absolute;z-index:10;}.qmmc, .qmmc ul {list-style:none;padding:0px;margin:0px;}.qmmc li a {float:none}.qmmc li:hover>ul{left:auto;}#qm0 ul {top:100%;}#qm0 ul li:hover>ul{top:0px;left:100%;}/*!!!!!!!!!!! MyCSSMenu Styles !!!!!!!!!!!*/	/* MyCSSMenu 0 */	/*"""""""" (MAIN) Items""""""""*/		#qm0 a		{			padding:5px 15px 5px 15px;		color:#ffffff;		font-family:Arial;		font-size:12px;		text-decoration:none;	}	#qm0 div a		{			color:#555555;	}	/*"""""""" (SUB) Container""""""""*/		#qm0 div, #qm0 ul		{			padding:10px;		margin:-2px 0px 0px;		background-color:#FFFFFF;		border-width:1px;		border-style:solid;		border-color:#AAAAAA;	}	/*"""""""" (SUB) Items""""""""*/		#qm0 div a, #qm0 ul a		{			padding:3px 10px 3px 5px;		background-color:transparent;		font-size:11px;		border-width:0px;		border-style:none;	}	/*"""""""" (SUB) Hover State""""""""*/		#qm0 div a:hover, #qm0 ul a:hover		{			background-color:#AAAAAA;		color:#FFFFFF;	}	/*"""""""" (SUB) Active State""""""""*/		body #qm0 div .qmactive, body #qm0 div .qmactive:hover		{			background-color:#AAAAAA;		color:#FFFFFF;	}	/*"""""""" Individual Titles""""""""*/		#qm0 .qmtitle		{			cursor:default;		padding:3px 0px 3px 4px;		color:#444444;		font-family:arial;		font-size:11px;		font-weight:bold;	}	/*"""""""" Individual Horizontal Dividers""""""""*/		#qm0 .qmdividerx		{			border-top-width:1px;		margin:4px 0px;		border-color:#AAAAAA;	}	/*"""""""" Individual Vertical Dividers""""""""*/		#qm0 .qmdividery		{			border-left-width:1px;		height:15px;		margin:4px 2px 0px;		border-color:#FFFFFF;	}	/*"""""""" (main) Rounded Items""""""""*/		#qm0 .qmritem span		{			border-color:#AAAAAA;		background-color:#FFFFFF;	}	/*"""""""" (main) Rounded Items Content""""""""*/		#qm0 .qmritemcontent		{			padding:0px 0px 0px 4px;	}	/*"""""""" (sub) Rounded Items""""""""*/		#qm0 div .qmritem span		{			border-color:#666666;		background-color:#AAAAAA;	}	/*"""""""" (sub) Rounded Items Content""""""""*/		#qm0 div .qmritemcontent		{			padding:0px 0px 0px 4px;	}</style>	<style type="text/css">body{	text-align: center; /* for IE */	background-color:#fafafa;}.divCenter{	position:relative;	margin-right:auto;	margin-left:auto;	width:1000px;	background:white;}#hdr-auth {    position: absolute;    right: 2px;    top: 0;    /*z-index: 100;*/}#hdr-auth ul {    margin-top: 0;}#hdr-auth li {    border-right: 1px solid #FFFFFF;    color: #FFFFFF;    display: block;    float: left;    font-size: 12px;    padding: 7px 9px 0 9px;}#hdr-auth li a {    color: #FFFFFF;    text-decoration: none;}.no-pad-right {    padding-right: 20px !important;}.no-border {    border: 0 none !important;}div.footer{position:relative; bottom:0px; left:0px; width:1000; height:30px; background-color:#8A8A8A; overflow:visible;}div.footer2{position:relative; z-index:4; font-family: sans-serif; font-weight:bold;}div.footer2 table tr td .navDividers{	font-family: sans-serif;	font-weight:bold;}div.footer2 table tr td .navDividers a{	text-decoration: none;	color: #020167;	font-weight: 400;	}.njt_borderbottom {	position:relative;	*top: -12px;	margin-right:auto;	margin-left:auto;	width:1000px;	background: url("http://www.njtransit.com/images/BR_shadow_1000x6.gif") no-repeat scroll 100% 100% transparent;	height: 6px;}a.copyright:hover{	color: #666666;}a.copyright, a.copyright:visited{	color: #666666;}.njt_ftrlnggcntr div a, div a:visited{	text-decoration: none;	color: #666666;}#njt_ftrcntntinner {    padding-top: 3px;}#njt_ftrcntnt, #njt_ftrcntntinner {    padding-top: 5px;    position: relative;    text-align: left;    width: 1000px;}#njt_ftrcntnt {    padding-bottom: 15px;}.njt_ftrnvlnks {    color: #999999;    font: 12px/14px arial,Helvetica,Utkal,sans-serif;    padding: 10px 0 8px;    text-align: center;}.njt_ftrnvlnks div {    padding: 0 0 4px;}.njt_ftrnvlnks div a {    padding: 0 3px;}.njt_ftrnvlnks div a:link {    color: #31447d;    outline: medium none;}.njt_ftrnvlnks div a:visited {    color: #31447d;    outline: medium none;}.njt_ftrnvlnks div a:hover {    text-decoration: none;}.njt_ftrnvlnks div a {    text-decoration: none;}.njt_ftrdivl2 {    background: url("http://www.njtransit.com/images/footer-menu-links.gif") repeat-x;    height: 20px;}.njt_clear {    clear: both;    height: 1px;    overflow: hidden;}.njt_divline {    background-color: #E5E5E5;    height: 1px;    overflow: hidden;}#ftr-social {    float: right;    margin-top: 7px;    margin-bottom: 7px;}#njt_ftrcntnt #ftr-weather {    display: inline;    float: left;}#njt_ftrwthr1 {    display: inline;    float: left;    margin: 10px 12px 0 20px;    width: 65px;}#njt_ftrwthr2 {    width: 225px;}#njt_ftrwthr2 {    color: #666666;    display: inline;    float: left;    font: bold 10px/14px arial,Helvetica,Utkal,sans-serif;    margin: 13px 0 0;    /*width: 684px;*/}#njt_ftrwthr3 {    display: inline;    float: left;    font: bold 27px/30px arial,Helvetica,Utkal,sans-serif;    margin: 0;    width: 50px;}#njt_ftrwthr4 {    display: inline;    float: left;    line-height: 14px;    margin: 0;    width: 175px;}#hdr-search {	position: absolute;	visibility:visible;	display: inline;	top: 33px;	right: 20px;}.njt_hdrsearch1 {}form.hdr-njt-google-search {    display: block;    margin: 0;    text-align: left;}form.hdr-njt-google-search input.hdr-njt-google-query {    border-color: #31518c;    border-style: solid;    border-width: 1pt;    float: left;    font-size: 12px;    height: 19px;    padding-left: 10px;    *padding-top: 1px;    width: 180px;}.hdr-njt-clickable {    color: #225BD0;    cursor: pointer;    text-decoration: none;    font-size: 11px;}.hdr-wx-searchButton {    background-color: #09224b;    border-bottom: 1pt solid #31518c;    border-right: 1pt solid #31518c;    border-top: 1pt solid #31518c;    color: #FFFFFF;    float: left;    font-weight: bold;    height: 17px;    line-height: 17px;    text-align: center;    text-transform: uppercase;    width: 64px;}form.hdr-njt-google-search input.hdr-njt-google-query:-moz-placeholder {    color: #999999 !important;    font-style: italic !important;}.njt_ftrlnggcntr {    color: #666666;    display: inline;    float: right;    font: 10px/14px arial,Helvetica,Utkal,sans-serif;    text-align: right;    width: 180px;}.njt_ftrlgcpy {    color: #666666;    display: inline;    float: left;    font: 10px/14px arial,Helvetica,Utkal,sans-serif;    margin: 5px 0 0 0;    width: 565px;}div.footer2 table tr td .navDividers a:hover{	text-decoration: underline;}#wxWrap {    width: 350px;    background: #EEE; /* Old browsers */    background: -moz-linear-gradient(top, rgba(240,240,240,1) 0%, rgba(224,224,224,1) 100%); /* FF3.6+ */    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(240,240,240,1)), color-stop(100%,rgba(224,224,224,1))); /* Chrome,Safari4+ */    background: -webkit-linear-gradient(top, rgba(240,240,240,1) 0%,rgba(224,224,224,1) 100%); /* Chrome10+,Safari5.1+ */    background: -o-linear-gradient(top, rgba(240,240,240,1) 0%,rgba(224,224,224,1) 100%); /* Opera11.10+ */    background: -ms-linear-gradient(top, rgba(240,240,240,1) 0%,rgba(224,224,224,1) 100%); /* IE10+ */    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f0f0', endColorstr='#e0e0e0',GradientType=0 ); /* IE6-9 */    background: linear-gradient(top, rgba(240,240,240,1) 0%,rgba(224,224,224,1) 100%); /* W3C */    padding: 2px 13px 2px 11px;    -webkit-border-radius: 4px;    -moz-border-radius: 4px;    border-radius: 4px;}#wxIntro {    display: inline-block;    font: 14px/20px Arial,Verdana,sans-serif;    color: #666;    vertical-align: top;    padding-top: 9px;}#wxIcon {    display: inline-block;    width: 61px;    height: 34px;    margin: 2px 0 -1px 1px;    overflow: hidden;    background: url('http://www.njtransit.com/images/weather/wicons.png') no-repeat 61px 0;}#wxIcon2 {    display: inline-block;    width: 34px;    height: 34px;    margin: 1px 6px 0 8px;    overflow: hidden;}#wxTemp {    display: inline-block;    font: 20px/28px Arial,Verdana,sans-serif;    color: #333;    vertical-align: top;    padding-top: 5px;    margin-left: 0;}#calendar {	width: 15.5em;	height: 4.5em;	float: right;	clear: right;	margin: 1em 1em 0 0;}	#calendar span {		float: left;		font-family: sans-serif;		font-weight: bold;		color: #B3B3B3;	}	#calendar .date {		font-size: 2.6em;		letter-spacing: -0.025em;		/*margin-top: -0.16em !important; IE7 and FF treat this differently*/		margin-top: -2px;	}	#calendar .day,	#calendar .month,	#calendar .year {		font-size: 1.1em;		margin-left: 0.25em;	}	#calendar .month,	#calendar .year {		margin-top: -0.1em;	}	#calendar .day {		width: 60%;	}	#calendar .monthyear {		white-space: nowrap;	}#search-main {position:relative; top: 0px; left: 0px; overflow:none;	width: 22.2em;	float: right;	clear: right;	margin: 0;}	#search-main form input.text {		float: left;		height: 1.7em;		padding: 2px 0 0 0;		font: 100% Arial, Helvetica, sans-serif; 		background-color: #1C207F;		border-color: #596278;		color: #FFFFFF;	}	#search-main form input.btn {		/*float: right;*/		width: 2.9em;		min-width: 29px;		height: 1.6em;		min-height: 16px;		margin: 0 0 0 0.3em;		font-size:11px;	}</style><div class="divCenter" style="position:relative; z-index:99;"><div class="noprint" style="position:relative; z-index:99;"><div style="position:relative; width:100%; height:65px; background-image:url(http://www.njtransit.com/images/njt_header.jpg);"><img src="http://www.njtransit.com/images/spacer.gif" usemap="#map" width="1000" height="65"><div id="hdr-auth" style="right: 5px;">	<ul>		<li class="no-border" style="margin-top: 3px; padding: 4px; color: #FFFFFF;">			My Transit		</li>		<li>			<a href="https://www.njtransit.com/mt/mt_servlet.srv?hdnPageAction=MTRegisterTo">Sign Up</a>		</li>		<li class="no-border no-pad-right">			<a href="https://www.njtransit.com/mt/mt_servlet.srv?hdnPageAction=MyTransitTo">Log In</a>		</li>	</ul></div><div id="hdr-search">	<div class="njt_hdrsearch1">			<form name="hdrfrmSearch" id="hdrfrmSearch" class="hdr-njt-google-search" method="post" action="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=SiteSearchTo">				<input name="txtSearch" type="text" class="hdr-njt-google-query notranslate form-watermark" placeholder="Enter Search Term" title="Enter Search Term">				<div id="clicksearch" class="hdr-wx-searchButton hdr-njt-clickable">search</div>			</form>	</div></div></div><div style="position:relative; height:35px; background-image:url(http://www.njtransit.com/images/njt_top_menu_bar.jpg);"><table align="center" summary="This table is used for page layout" border="0" cellspacing="0" cellpadding="0">	<tbody><tr>		<td><div style="position:relative; top: 6px; z-index:3;"><div class="qmmc" id="qm0" style="zoom: 1; z-index: 11;"><a class="qmparent" style="padding-left: 0;" href="javascript:void(0)">Schedules &amp; Fares</a><div style="z-index: 21;"><a href="">Train</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=BusTo">Bus</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=LightRailTo">Light Rail</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=TripPlannerTo">Trip Planner</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=TripPlannerServiceNearTo">Service Near a Location</a></div><span class="qmdivider qmdividery"></span><a class="qmparent" href="javascript:void(0)">Alerts &amp; Advisories</a><div style="z-index: 21;"><a href="http://www.njtransit.com/sa/sa_servlet.srv?hdnPageAction=TravelAlertsTo">Current Travel Alerts</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/sa/sa_servlet.srv?hdnPageAction=CustomerNoticesTo">Customer Notices</a><span class="qmdivider qmdividerx"></span><a href="https://www.njtransit.com/mt/mt_servlet.srv?hdnPageAction=MyTransitTo">My Transit Alerts</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/var/var_servlet.srv?hdnPageAction=SocialMediaTo">Social Media</a></div><span class="qmdivider qmdividery"></span><a class="qmparent" href="javascript:void(0)">Ticket Options</a><div style="z-index: 21;"><a href="https://ww2.njtransit.com/qt/qt_servlet.srv?hdnPageAction=QuikTikTo">Quik-Tik | Tickets by Mail</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/ti/ti_servlet.srv?hdnPageAction=RailTicketsTo">Rail Tickets</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/ti/ti_servlet.srv?hdnPageAction=BusTicketsTo">Bus Tickets</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/ti/ti_servlet.srv?hdnPageAction=LightRailTicketsTo">Light Rail Tickets</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/var/var_servlet.srv?hdnPageAction=MobileTicketingTo">MyTix℠ Mobile Ticketing</a><span class="qmdivider qmdividerx"></span><a href="https://mtix.njtransit.com/masticketing/?page=meadowlandsticketing">Meadowlands Ticketing</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/ti/ti_servlet.srv?hdnPageAction=ContactlessPaymentTo">Contactless Payments</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/var/var_servlet.srv?hdnPageAction=TapRideTo">Tap &gt; Ride</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/ti/ti_servlet.srv?hdnPageAction=GroupTravelTo">Group Sales</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/ti/ti_servlet.srv?hdnPageAction=StudentPassTo">Student Pass</a></div><span class="qmdivider qmdividery"></span><a class="qmparent" href="javascript:void(0)">Rider Tools</a><div style="z-index: 21;"><a href="http://www.njtransit.com/rg/rg_servlet.srv?hdnPageAction=StationParkRideTo">Station &amp; Parking Info</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/rg/rg_servlet.srv?hdnPageAction=HowToRideTo">How to Ride NJ TRANSIT</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/rg/rg_servlet.srv?hdnPageAction=FaqTo">Frequently Asked Questions</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/var/var_servlet.srv?hdnPageAction=BusShelterFAQTo">Bus Stops &amp; Shelters</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/rg/rg_servlet.srv?hdnPageAction=AirportConnectionsTo">Newark Airport</a><span class="qmdivider qmdividerx"></span><a href="http://mybusnow.njtransit.com/bustime/home.jsp">My Bus Now</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=BusServiceNearByFrom">My Bus</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=MyLightRailTo">My Light Rail</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/rg/rg_servlet.srv?hdnPageAction=ConnectionsTo">Connecting Services</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/rg/rg_servlet.srv?hdnPageAction=BikeProgramTo">Bike &amp; Ride</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/var/var_servlet.srv?hdnPageAction=WiFiTo">WiFi</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/rg/rg_servlet.srv?hdnPageAction=SafetyTo">Safety</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=SpTo">Deals &amp; Discounts</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=CommCalculatorTo">Commuter Calculator</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/var/var_servlet.srv?hdnPageAction=QuietCommuteTo">Quiet Commute</a></div><span class="qmdivider qmdividery"></span><a class="qmparent" href="javascript:void(0);">Maps</a><div style="z-index: 21;"><a href="http://www.njtransit.com/pdf/rail/Rail_System_Map.pdf" target="_blank">Rail System</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/pdf/LightRail/sf_lr_hblr_map.pdf" target="_blank">Hudson-Bergen Light Rail</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/pdf/LightRail/sf_lr_nlr_map.pdf" target="_blank">Newark Light Rail</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/pdf/LightRail/sf_lr_rvl_map.pdf" target="_blank">River Line</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/pdf/rail/PABT_Directory.pdf" target="_blank">Port Authority Bus Terminal Directory</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/pdf/rail/NYPENN_Directory.pdf" target="_blank">Penn Station New York Directory</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/pdf/rail/Rail_System_Map.pdf" target="_blank" class="qmparent">County Bus Maps</a><div style="z-index: 31;"><a href="http://www.njtransit.com/pdf/bus/Hudson_County_Map.pdf" target="_blank">Hudson County</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/pdf/bus/Morris_County_Map.pdf" target="_blank">Morris County</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/pdf/bus/Passaic_County_Map.pdf" target="_blank">Passaic County</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/pdf/bus/Bergen_County_Map.pdf" target="_blank">Bergen County</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/pdf/bus/Essex_County_Map.pdf" target="_blank">Essex County</a></div></div><span class="qmdivider qmdividery"></span><a class="qmparent" href="javascript:void(0);">Accessibility</a><div style="z-index: 21;"><a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=AccessLinkTo">Access Link, ADA Paratransit</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=RailAccessTo">Accessible Rail</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=BusAccessTo">Accessible Bus</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=LightRailTo">Accessible Light Rail</a><span class="qmdivider qmdividerx"></span><a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=ParaTransitTo">Community Transportation</a></div><span class="qmdivider qmdividery"></span><a class="qmparent" href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=ContactUsTo">Contact Us</a><div style="z-index: 21;"><a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=ContactUsTelephoneTo">Customer Service Offices</a><span class="qmdivider qmdividerx"></span><a href="https://ww3.njtransit.com/LostAndFound/resources/jsp/lf_lost_input.jsp?KeepThis=true&modal=true&showclose=true&TB_iframe=true&height=500&width=900" class="thickbox">Lost &amp; Found</a><span class="qmdivider qmdividerx"></span><a href="https://njtransit.secure.force.com/customerservice/ContactUs?KeepThis=true&modal=true&showclose=true&TB_iframe=true&height=500&width=900" class="thickbox">Online Contact Form</a></div><span class="qmdivider qmdividery"></span><a class="qmparent" href="http://www.njtransit.com/po/po_servlet.srv?hdnPageAction=PoliceHomeTo">Police</a><span class="qmclear">&nbsp;</span></div></div>		</td>	</tr></tbody></table></div></div><map name="map">	<area shape="RECT" coords="20,21,246,47" href="http://www.njtransit.com/hp/hp_servlet.srv?hdnPageAction=HomePageTo" alt="New Jersey Transit"></map><!-- ################### BEGIN PAGE CONTENT ################### --> <div class="content" style=""><table align="center" summary="This table is used for page layout" width="100%" border="0" cellspacing="0" cellpadding="0">	<tbody><tr>	 	<td valign="top" style="width:13px; height:400px; background-image:url(http://www.njtransit.com/images/spacer.gif)"></td>		<td valign="top">				<table align="center" cellpadding="0" cellspacing="0" border="0" width="960">					<tbody><tr><td height="10"></td></tr>					<tr><td>
+<!-- Google Ads Div -->
+<img src="http://www.njtransit.com/images/spacer.gif" alt="" width="1" height="9" border="0"><br>
+<div align="center">
+  <div id="adsenseHeader"></div>	
+    <div id="adsenseHeader-loader" style="display:block;">
+	    <script async="" src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+		<!-- Train Schedules & Fares -->
+		    <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-7698699613857784" data-ad-slot="9844538165"></ins>
+		  <script>
+		 (adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+	<!--<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>-->
+	</div>	
+ </div>
+<img src="http://www.njtransit.com/images/spacer.gif" alt="" width="1" height="9" border="0">
+<!-- Google Ads Div -->
+
+<table align="center" border="0" cellspacing="0" cellpadding="0">
+<!-- <tr>
+	<td colspan="3">
+		<div class="content-module">
+		<div style="position:relative; top:10px; left:10px; width:940px;">
+		<table border="0" cellspacing="0" cellpadding="0">
+			<tr><td>
+		NJ TRANSIT operates the state's commuter rail network. The rail system features 11 lines in three divisions. Customers can transfer between all lines, except Atlantic City Rail Line, at the new Secaucus Junction station. (The Raritan Valley Line requires an additional transfer at Newark Penn Station.)<br>
+			</td></tr>
+			<tr><td><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="12" width="1" alt=""></td></tr>
+		<tr><td>
+		<ul style="*margin-bottom:10px;">
+			<li><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="1" width="1" alt=""><span class="emphasis">The Hoboken Division</span> (includes the MidTOWN DIRECT service on the Morris & Essex and Montclair-Boonton lines to and from Penn Station New York and lines operating to and from Hoboken Terminal on the Morris & Essex, Main/Bergen, Pascack Valley and Montclair-Boonton lines).</li>
+			<li><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="20" width="1" alt=""><span class="emphasis">The Newark Division</span> (includes the Northeast Corridor, North Jersey Coast, and Raritan Valley lines operating to and from Newark Penn Station, Hoboken Terminal, and Penn Station New York).</li>
+			<li><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="20" width="1" alt=""><span class="emphasis">The Atlantic City Rail Line</span> (operates between the seaside resort city and Philadelphia, serving points in between).</li>
+		</ul>
+			</td></tr>
+			<tr><td>
+		NJ TRANSIT also runs rail service to and from points in New York State on the Pascack Valley and Port Jervis lines under contract with the Metropolitan Transportation Authority. NJ TRANSIT's rail network provides links to the region's other transit systems. Transfers to the state's bus system are possible at many rail stations, while at Penn Station New York, connections are available to Amtrak, the Long Island Railroad, and the New York City subway system. At Trenton, riders can connect to SEPTA and Amtrak.
+			</td></tr>
+			<tr><td><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="12" width="1" alt=""></td></tr>
+			<tr><td>
+		At NJ TRANSIT's Hoboken Terminal, transfers can be made to PATH trains between Hoboken, Jersey City, Newark, and midtown Manhattan; to Manhattan-bound ferry service; and to NJ TRANSIT's Hudson-Bergen Light Rail System. At Newark Broad Street Station, connections are available to NJ TRANSIT's Newark Light Rail. At Newark Penn Station, the state's busiest transit hub, connections to Amtrak, PATH and NJ TRANSIT's Newark Light Rail are available. PATH can be used to connect with NJ TRANSIT's Hudson-Bergen Light Rail System. On South Jersey's Atlantic City Rail Line, connections can be made to Amtrak and SEPTA at Philadelphia's 30th Street Station.
+			</td></tr>
+			<tr><td><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="12" width="1" alt=""></td></tr>
+			<tr><td>
+		Click here to view a PDF <a href="http://www.njtransit.com/pdf/rail/Rail_System_Map.pdf" target="_blank">map of the NJ TRANSIT rail system. </a>
+			</td></tr>
+			<tr><td><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="12" width="1" alt=""></td></tr>
+			<tr><td>
+		Visit our <a href="sf_servlet.srv?hdnPageAction=TrainFareOptionsTo">Fare Options</a> section to learn more about the different fare options available for train rides.
+			</td></tr>
+			<tr><td><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="12" width="1" alt=""></td></tr>
+			<tr><td>
+		For trips that include transfer to bus, light rail or more than two rail transfers, use <a href="sf_servlet.srv?hdnPageAction=TripPlannerItineraryTo">Itinerary Planner.</a>
+			</td></tr>
+		</table>
+		</div>
+		</div>
+	</td>
+	</tr>-->
+
+	  <tbody><tr>
+	  	<td colspan="3"><img src="http://www.njtransit.com/images/rail_schedules_header.jpg" alt="" width="960" height="226" border="0"></td>
+	  </tr>
+	
+
+<!-- RED NOTE BY LINE GOES BELOW -->
+
+	 
+		<!-- 	<tr>
+			      <td align="left" colspan="3"><br/><span style="color:red;"><strong>IMPORTANT NOTE:</strong>Atlantic City Line trains are replaced by buses between Philadelphia and Cherry Hill from 1:30 AM Saturday, March 15 until 4:30 AM Tuesday, March 18. During this time, Pennsauken station will be served by a combination of buses and alternate service. In certain cases, buses departing Philadelphia and Pennsauken for Cherry Hill will depart earlier than the scheduled train times. See <a target="_blank" href="http://www.njtransit.com/sa/sa_servlet.srv?hdnPageAction=ServiceAdjustmentTo&AdjustmentId=10756">customer notice</a> for further details.</span><br/></td>
+			                                                                                            
+			</tr>-->
+	
+ <!--  RED NOTE ENDS HERE -->
+	 
+      <tr>
+            <td valign="top">
+               <div class="AccordionSchedules" tabindex="0">
+	 		<div class="AccordionPanel">
+	            	<div class="AccordionPanelTab">Train Schedules</div>
+	            	<div class="AccordionPanelContent" style="height:180px;*height:210px;">	
+					<form name="frm_tr_schedules" action="http://www.njtransit.com/sf/sf_servlet.srv" method="GET">
+                              <input type="hidden" name="hdnPageAction" value="TrainSchedulesFrom" />
+			                  <table border="0" cellspacing="0" cellpadding="4">
+			                  <tbody><tr>
+			                        <td align="center" colspan="2">
+			                        	<img src="http://www.njtransit.com/images/spacer.gif" alt="" width="25" height="1" border="0"><a href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=TrainTo#" onclick="showMapWindow()">Use Our Rail Map to Select Stations</a>
+			                            <!-- <input type=button value="Use Our Rail Map to Plan Your Trip" onClick="showMapWindow()">-->
+			                        </td>
+			                  </tr>
+			                  <tr>
+			                        <td valign="top" align="right"><span class="emphasis">Origin Station : </span></td>
+			                        <td align="left">
+			                        	<span class="notranslate">
+			                              <select name="selOrigin">
+			                                    <option value="">Select Station</option>
+			                              
+			                                                	<option value="37169_NJCL">Aberdeen Matawan</option>
+			                                          		
+			                                                	<option value="2_ATLC">Absecon</option>
+			                                          		
+			                                                	<option value="3_MNBN">Allendale</option>
+			                                          		
+			                                                	<option value="4_NJCL">Allenhurst</option>
+			                                          		
+			                                                	<option value="5_PASC">Anderson Street</option>
+			                                          		
+			                                                	<option value="6_RARV">Annandale</option>
+			                                          		
+			                                                	<option value="8_NJCL">Asbury Park</option>
+			                                          		
+			                                                	<option value="9_ATLC">Atco</option>
+			                                          		
+			                                                	<option value="10_ATLC">Atlantic City</option>
+			                                          		
+			                                                	<option value="11_NJCL">Avenel</option>
+			                                          		
+			                                                	<option value="12_MNE">Basking Ridge</option>
+			                                          		
+			                                                	<option value="13_NJCL">Bay Head</option>
+			                                          		
+			                                                	<option value="14_BNTN">Bay Street</option>
+			                                          		
+			                                                	<option value="15_NJCL">Belmar</option>
+			                                          		
+			                                                	<option value="17_MNE">Berkeley Heights</option>
+			                                          		
+			                                                	<option value="18_MNE">Bernardsville</option>
+			                                          		
+			                                                	<option value="19_BNTN">Bloomfield</option>
+			                                          		
+			                                                	<option value="20_BNTN">Boonton</option>
+			                                          		
+			                                                	<option value="21_RARV">Bound Brook</option>
+			                                          		
+			                                                	<option value="22_NJCL">Bradley Beach</option>
+			                                          		
+			                                                	<option value="23_MNE">Brick Church</option>
+			                                          		
+			                                                	<option value="24_RARV">Bridgewater</option>
+			                                          		
+			                                                	<option value="25_MNBN">Broadway</option>
+			                                          		
+			                                                	<option value="26_MNBN">Campbell Hall</option>
+			                                          		
+			                                                	<option value="27_MNE">Chatham</option>
+			                                          		
+			                                                	<option value="28_ATLC">Cherry Hill</option>
+			                                          		
+			                                                	<option value="29_MNBN">Clifton</option>
+			                                          		
+			                                                	<option value="30_MNE">Convent Station</option>
+			                                          		
+			                                                	<option value="32_RARV">Cranford</option>
+			                                          		
+			                                                	<option value="33_MNBN">Delawanna</option>
+			                                          		
+			                                                	<option value="34_BNTN">Denville</option>
+			                                          		
+			                                                	<option value="35_BNTN">Dover</option>
+			                                          		
+			                                                	<option value="36_RARV">Dunellen</option>
+			                                          		
+			                                                	<option value="37_MNE">East Orange</option>
+			                                          		
+			                                                	<option value="38_NEC">Edison</option>
+			                                          		
+			                                                	<option value="39_ATLC">Egg Harbor City</option>
+			                                          		
+			                                                	<option value="40_NJCL">Elberon</option>
+			                                          		
+			                                                	<option value="41_NEC">Elizabeth</option>
+			                                          		
+			                                                	<option value="42_PASC">Emerson</option>
+			                                          		
+			                                                	<option value="43_PASC">Essex Street</option>
+			                                          		
+			                                                	<option value="44_RARV">Fanwood</option>
+			                                          		
+			                                                	<option value="45_MNE">Far Hills</option>
+			                                          		
+			                                                	<option value="46_MNBN">Garfield</option>
+			                                          		
+			                                                	<option value="47_RARV">Garwood</option>
+			                                          		
+			                                                	<option value="48_MNE">Gillette</option>
+			                                          		
+			                                                	<option value="49_MNE">Gladstone</option>
+			                                          		
+			                                                	<option value="50_BNTN">Glen Ridge</option>
+			                                          		
+			                                                	<option value="51_MNBN">Glen Rock Boro Hall</option>
+			                                          		
+			                                                	<option value="52_MNBN">Glen Rock Main Line</option>
+			                                          		
+			                                                	<option value="54_BNTN">Hackettstown</option>
+			                                          		
+			                                                	<option value="32905_NEC">Hamilton</option>
+			                                          		
+			                                                	<option value="55_ATLC">Hammonton</option>
+			                                          		
+			                                                	<option value="57_MNBN">Harriman</option>
+			                                          		
+			                                                	<option value="58_MNBN">Hawthorne</option>
+			                                          		
+			                                                	<option value="59_NJCL">Hazlet</option>
+			                                          		
+			                                                	<option value="60_RARV">High Bridge</option>
+			                                          		
+			                                                	<option value="61_MNE">Highland Avenue</option>
+			                                          		
+			                                                	<option value="62_PASC">Hillsdale</option>
+			                                          		
+			                                                	<option value="64_MNBN">Ho-Ho-Kus</option>
+			                                          		
+			                                                	<option value="63_BNTN">Hoboken</option>
+			                                          		
+			                                                	<option value="32906_NEC">Jersey Avenue</option>
+			                                          		
+			                                                	<option value="66_MNBN">Kingsland</option>
+			                                          		
+			                                                	<option value="67_BNTN">Lake Hopatcong</option>
+			                                          		
+			                                                	<option value="68_RARV">Lebanon</option>
+			                                          		
+			                                                	<option value="69_BNTN">Lincoln Park</option>
+			                                          		
+			                                                	<option value="70_NEC">Linden</option>
+			                                          		
+			                                                	<option value="71_ATLC">Lindenwold</option>
+			                                          		
+			                                                	<option value="72_BNTN">Little Falls</option>
+			                                          		
+			                                                	<option value="73_NJCL">Little Silver</option>
+			                                          		
+			                                                	<option value="74_NJCL">Long Branch</option>
+			                                          		
+			                                                	<option value="75_MNBN">Lyndhurst</option>
+			                                          		
+			                                                	<option value="76_MNE">Lyons</option>
+			                                          		
+			                                                	<option value="77_MNE">Madison</option>
+			                                          		
+			                                                	<option value="78_MNBN">Mahwah</option>
+			                                          		
+			                                                	<option value="79_NJCL">Manasquan</option>
+			                                          		
+			                                                	<option value="81_MNE">Maplewood</option>
+			                                          		
+			                                                	<option value="40570_SL">Meadowlands Sports Complex</option>
+			                                          		
+			                                                	<option value="83_NEC">Metropark</option>
+			                                          		
+			                                                	<option value="84_NEC">Metuchen</option>
+			                                          		
+			                                                	<option value="85_NJCL">Middletown New Jersey</option>
+			                                          		
+			                                                	<option value="86_MNBN">Middletown New York</option>
+			                                          		
+			                                                	<option value="87_MNE">Millburn</option>
+			                                          		
+			                                                	<option value="88_MNE">Millington</option>
+			                                          		
+			                                                	<option value="31696_NJCL">Monmouth Park</option>
+			                                          		
+			                                                	<option value="89_BNTN">Montclair Heights</option>
+			                                          		
+			                                                	<option value="38081_BNTN">Montclair State University</option>
+			                                          		
+			                                                	<option value="90_PASC">Montvale</option>
+			                                          		
+			                                                	<option value="91_MNE">Morris Plains</option>
+			                                          		
+			                                                	<option value="92_MNE">Morristown</option>
+			                                          		
+			                                                	<option value="39472_BNTN">Mount Arlington</option>
+			                                          		
+			                                                	<option value="93_BNTN">Mount Olive</option>
+			                                          		
+			                                                	<option value="94_MNE">Mount Tabor</option>
+			                                          		
+			                                                	<option value="95_BNTN">Mountain Avenue</option>
+			                                          		
+			                                                	<option value="96_BNTN">Mountain Lakes</option>
+			                                          		
+			                                                	<option value="97_MNE">Mountain Station</option>
+			                                          		
+			                                                	<option value="98_BNTN">Mountain View</option>
+			                                          		
+			                                                	<option value="99_MNE">Murray Hill</option>
+			                                          		
+			                                                	<option value="100_PASC">Nanuet</option>
+			                                          		
+			                                                	<option value="101_BNTN">Netcong</option>
+			                                          		
+			                                                	<option value="102_RARV">Netherwood</option>
+			                                          		
+			                                                	<option value="110_PASC">New Bridge Landing</option>
+			                                          		
+			                                                	<option value="103_NEC">New Brunswick</option>
+			                                          		
+			                                                	<option value="104_MNE">New Providence</option>
+			                                          		
+			                                                	<option value="105_BNTN" selected>New York Penn Station</option>
+			                                          		
+			                                                	<option value="37953_NEC">Newark Airport</option>
+			                                          		
+			                                                	<option value="106_BNTN">Newark Broad Street</option>
+			                                          		
+			                                                	<option value="107_NEC">Newark Penn Station</option>
+			                                          		
+			                                                	<option value="108_RARV">North Branch</option>
+			                                          		
+			                                                	<option value="109_NEC">North Elizabeth</option>
+			                                          		
+			                                                	<option value="111_PASC">Oradell</option>
+			                                          		
+			                                                	<option value="112_MNE">Orange</option>
+			                                          		
+			                                                	<option value="113_MNBN">Otisville</option>
+			                                          		
+			                                                	<option value="114_PASC">Park Ridge</option>
+			                                          		
+			                                                	<option value="115_MNBN">Passaic</option>
+			                                          		
+			                                                	<option value="116_MNBN">Paterson</option>
+			                                          		
+			                                                	<option value="117_MNE">Peapack</option>
+			                                          		
+			                                                	<option value="118_PASC">Pearl River</option>
+			                                          		
+			                                                	<option value="43298_ATLC">Pennsauken Transit Center</option>
+			                                          		
+			                                                	<option value="119_NJCL">Perth Amboy</option>
+			                                          		
+			                                                	<option value="1_ATLC">Philadelphia 30th Street</option>
+			                                          		
+			                                                	<option value="120_RARV">Plainfield</option>
+			                                          		
+			                                                	<option value="121_MNBN">Plauderville</option>
+			                                          		
+			                                                	<option value="122_NJCL">Point Pleasant Beach</option>
+			                                          		
+			                                                	<option value="123_MNBN">Port Jervis</option>
+			                                          		
+			                                                	<option value="124_PRIN">Princeton</option>
+			                                          		
+			                                                	<option value="125_NEC">Princeton Junction</option>
+			                                          		
+			                                                	<option value="126_MNBN">Radburn</option>
+			                                          		
+			                                                	<option value="127_NEC">Rahway</option>
+			                                          		
+			                                                	<option value="128_MNBN">Ramsey</option>
+			                                          		
+			                                                	<option value="38417_MNBN">Ramsey Route 17</option>
+			                                          		
+			                                                	<option value="129_RARV">Raritan</option>
+			                                          		
+			                                                	<option value="130_NJCL">Red Bank</option>
+			                                          		
+			                                                	<option value="131_MNBN">Ridgewood</option>
+			                                          		
+			                                                	<option value="132_PASC">River Edge</option>
+			                                          		
+			                                                	<option value="31_RARV">Roselle Park</option>
+			                                          		
+			                                                	<option value="134_MNBN">Rutherford</option>
+			                                          		
+			                                                	<option value="135_MNBN">Salisbury Mills Cornwall</option>
+			                                          		
+			                                                	<option value="38174_BNTN">Secaucus Junction</option>
+			                                          		
+			                                                	<option value="136_MNE">Short Hills</option>
+			                                          		
+			                                                	<option value="137_MNBN">Sloatsburg</option>
+			                                          		
+			                                                	<option value="138_RARV">Somerville</option>
+			                                          		
+			                                                	<option value="139_NJCL">South Amboy</option>
+			                                          		
+			                                                	<option value="140_MNE">South Orange</option>
+			                                          		
+			                                                	<option value="141_NJCL">Spring Lake</option>
+			                                          		
+			                                                	<option value="142_PASC">Spring Valley</option>
+			                                          		
+			                                                	<option value="143_MNE">Stirling</option>
+			                                          		
+			                                                	<option value="144_MNBN">Suffern</option>
+			                                          		
+			                                                	<option value="145_MNE">Summit</option>
+			                                          		
+			                                                	<option value="146_PASC">Teterboro</option>
+			                                          		
+			                                                	<option value="147_BNTN">Towaco</option>
+			                                          		
+			                                                	<option value="148_NEC">Trenton Transit Center</option>
+			                                          		
+			                                                	<option value="149_MNBN">Tuxedo</option>
+			                                          		
+			                                                	<option value="38105_RARV">Union</option>
+			                                          		
+			                                                	<option value="150_BNTN">Upper Montclair</option>
+			                                          		
+			                                                	<option value="151_MNBN">Waldwick</option>
+			                                          		
+			                                                	<option value="152_BNTN">Walnut Street</option>
+			                                          		
+			                                                	<option value="153_BNTN">Watchung Avenue</option>
+			                                          		
+			                                                	<option value="154_BNTN">Watsessing Avenue</option>
+			                                          		
+			                                                	<option value="39635_BNTN">Wayne/Route 23 Transit Center</option>
+			                                          		
+			                                                	<option value="155_RARV">Westfield</option>
+			                                          		
+			                                                	<option value="156_PASC">Westwood</option>
+			                                          		
+			                                                	<option value="157_RARV">White House</option>
+			                                          		
+			                                                	<option value="160_PASC">Wood Ridge</option>
+			                                          		
+			                                                	<option value="158_NJCL">Woodbridge</option>
+			                                          		
+			                                                	<option value="159_PASC">Woodcliff Lake</option>
+			                                          		
+			                                    
+			                              </select>
+			                              </span><br>
+			                              <a style="font-size:7pt;" href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=TrainTo#" onclick="showStationInfo(document.frm_tr_schedules.selOrigin)">Get Station Info</a>
+			                              <!-- <input type=button value="Station Information" onClick="showStationInfo(document.frm_tr_schedules.selOrigin)">-->
+			                        </td>
+			                  </tr>
+			                  <tr>
+			                        <td valign="top" align="right"><span class="emphasis">Destination Station : </span></td>
+			                        <td align="left">
+			                        	<span class="notranslate">
+			                              <select name="selDestination">
+			                                    <option value="">Select Station</option>
+			                                    
+				                                                	<option value="37169_NJCL">Aberdeen Matawan</option>
+					                                          
+				                                                	<option value="2_ATLC">Absecon</option>
+					                                          
+				                                                	<option value="3_MNBN">Allendale</option>
+					                                          
+				                                                	<option value="4_NJCL">Allenhurst</option>
+					                                          
+				                                                	<option value="5_PASC">Anderson Street</option>
+					                                          
+				                                                	<option value="6_RARV">Annandale</option>
+					                                          
+				                                                	<option value="8_NJCL">Asbury Park</option>
+					                                          
+				                                                	<option value="9_ATLC">Atco</option>
+					                                          
+				                                                	<option value="10_ATLC">Atlantic City</option>
+					                                          
+				                                                	<option value="11_NJCL">Avenel</option>
+					                                          
+				                                                	<option value="12_MNE">Basking Ridge</option>
+					                                          
+				                                                	<option value="13_NJCL">Bay Head</option>
+					                                          
+				                                                	<option value="14_BNTN">Bay Street</option>
+					                                          
+				                                                	<option value="15_NJCL">Belmar</option>
+					                                          
+				                                                	<option value="17_MNE">Berkeley Heights</option>
+					                                          
+				                                                	<option value="18_MNE">Bernardsville</option>
+					                                          
+				                                                	<option value="19_BNTN">Bloomfield</option>
+					                                          
+				                                                	<option value="20_BNTN">Boonton</option>
+					                                          
+				                                                	<option value="21_RARV">Bound Brook</option>
+					                                          
+				                                                	<option value="22_NJCL">Bradley Beach</option>
+					                                          
+				                                                	<option value="23_MNE">Brick Church</option>
+					                                          
+				                                                	<option value="24_RARV">Bridgewater</option>
+					                                          
+				                                                	<option value="25_MNBN">Broadway</option>
+					                                          
+				                                                	<option value="26_MNBN">Campbell Hall</option>
+					                                          
+				                                                	<option value="27_MNE">Chatham</option>
+					                                          
+				                                                	<option value="28_ATLC">Cherry Hill</option>
+					                                          
+				                                                	<option value="29_MNBN">Clifton</option>
+					                                          
+				                                                	<option value="30_MNE">Convent Station</option>
+					                                          
+				                                                	<option value="32_RARV">Cranford</option>
+					                                          
+				                                                	<option value="33_MNBN">Delawanna</option>
+					                                          
+				                                                	<option value="34_BNTN">Denville</option>
+					                                          
+				                                                	<option value="35_BNTN">Dover</option>
+					                                          
+				                                                	<option value="36_RARV">Dunellen</option>
+					                                          
+				                                                	<option value="37_MNE">East Orange</option>
+					                                          
+				                                                	<option value="38_NEC">Edison</option>
+					                                          
+				                                                	<option value="39_ATLC">Egg Harbor City</option>
+					                                          
+				                                                	<option value="40_NJCL">Elberon</option>
+					                                          
+				                                                	<option value="41_NEC">Elizabeth</option>
+					                                          
+				                                                	<option value="42_PASC">Emerson</option>
+					                                          
+				                                                	<option value="43_PASC">Essex Street</option>
+					                                          
+				                                                	<option value="44_RARV">Fanwood</option>
+					                                          
+				                                                	<option value="45_MNE">Far Hills</option>
+					                                          
+				                                                	<option value="46_MNBN">Garfield</option>
+					                                          
+				                                                	<option value="47_RARV">Garwood</option>
+					                                          
+				                                                	<option value="48_MNE">Gillette</option>
+					                                          
+				                                                	<option value="49_MNE">Gladstone</option>
+					                                          
+				                                                	<option value="50_BNTN">Glen Ridge</option>
+					                                          
+				                                                	<option value="51_MNBN">Glen Rock Boro Hall</option>
+					                                          
+				                                                	<option value="52_MNBN">Glen Rock Main Line</option>
+					                                          
+				                                                	<option value="54_BNTN">Hackettstown</option>
+					                                          
+				                                                	<option value="32905_NEC">Hamilton</option>
+					                                          
+				                                                	<option value="55_ATLC">Hammonton</option>
+					                                          
+				                                                	<option value="57_MNBN">Harriman</option>
+					                                          
+				                                                	<option value="58_MNBN">Hawthorne</option>
+					                                          
+				                                                	<option value="59_NJCL">Hazlet</option>
+					                                          
+				                                                	<option value="60_RARV">High Bridge</option>
+					                                          
+				                                                	<option value="61_MNE">Highland Avenue</option>
+					                                          
+				                                                	<option value="62_PASC">Hillsdale</option>
+					                                          
+				                                                	<option value="64_MNBN">Ho-Ho-Kus</option>
+					                                          
+				                                                	<option value="63_BNTN">Hoboken</option>
+					                                          
+				                                                	<option value="32906_NEC">Jersey Avenue</option>
+					                                          
+				                                                	<option value="66_MNBN">Kingsland</option>
+					                                          
+				                                                	<option value="67_BNTN">Lake Hopatcong</option>
+					                                          
+				                                                	<option value="68_RARV">Lebanon</option>
+					                                          
+				                                                	<option value="69_BNTN">Lincoln Park</option>
+					                                          
+				                                                	<option value="70_NEC">Linden</option>
+					                                          
+				                                                	<option value="71_ATLC">Lindenwold</option>
+					                                          
+				                                                	<option value="72_BNTN">Little Falls</option>
+					                                          
+				                                                	<option value="73_NJCL">Little Silver</option>
+					                                          
+				                                                	<option value="74_NJCL">Long Branch</option>
+					                                          
+				                                                	<option value="75_MNBN">Lyndhurst</option>
+					                                          
+				                                                	<option value="76_MNE">Lyons</option>
+					                                          
+				                                                	<option value="77_MNE">Madison</option>
+					                                          
+				                                                	<option value="78_MNBN">Mahwah</option>
+					                                          
+				                                                	<option value="79_NJCL">Manasquan</option>
+					                                          
+				                                                	<option value="81_MNE">Maplewood</option>
+					                                          
+				                                                	<option value="40570_SL">Meadowlands Sports Complex</option>
+					                                          
+				                                                	<option value="83_NEC">Metropark</option>
+					                                          
+				                                                	<option value="84_NEC">Metuchen</option>
+					                                          
+				                                                	<option value="85_NJCL">Middletown New Jersey</option>
+					                                          
+				                                                	<option value="86_MNBN">Middletown New York</option>
+					                                          
+				                                                	<option value="87_MNE">Millburn</option>
+					                                          
+				                                                	<option value="88_MNE">Millington</option>
+					                                          
+				                                                	<option value="31696_NJCL">Monmouth Park</option>
+					                                          
+				                                                	<option value="89_BNTN">Montclair Heights</option>
+					                                          
+				                                                	<option value="38081_BNTN">Montclair State University</option>
+					                                          
+				                                                	<option value="90_PASC">Montvale</option>
+					                                          
+				                                                	<option value="91_MNE">Morris Plains</option>
+					                                          
+				                                                	<option value="92_MNE">Morristown</option>
+					                                          
+				                                                	<option value="39472_BNTN">Mount Arlington</option>
+					                                          
+				                                                	<option value="93_BNTN">Mount Olive</option>
+					                                          
+				                                                	<option value="94_MNE">Mount Tabor</option>
+					                                          
+				                                                	<option value="95_BNTN">Mountain Avenue</option>
+					                                          
+				                                                	<option value="96_BNTN">Mountain Lakes</option>
+					                                          
+				                                                	<option value="97_MNE">Mountain Station</option>
+					                                          
+				                                                	<option value="98_BNTN">Mountain View</option>
+					                                          
+				                                                	<option value="99_MNE">Murray Hill</option>
+					                                          
+				                                                	<option value="100_PASC">Nanuet</option>
+					                                          
+				                                                	<option value="101_BNTN">Netcong</option>
+					                                          
+				                                                	<option value="102_RARV">Netherwood</option>
+					                                          
+				                                                	<option value="110_PASC">New Bridge Landing</option>
+					                                          
+				                                                	<option value="103_NEC">New Brunswick</option>
+					                                          
+				                                                	<option value="104_MNE">New Providence</option>
+					                                          
+				                                                	<option value="105_BNTN" selected>New York Penn Station</option>
+					                                          
+				                                                	<option value="37953_NEC">Newark Airport</option>
+					                                          
+				                                                	<option value="106_BNTN">Newark Broad Street</option>
+					                                          
+				                                                	<option value="107_NEC">Newark Penn Station</option>
+					                                          
+				                                                	<option value="108_RARV">North Branch</option>
+					                                          
+				                                                	<option value="109_NEC">North Elizabeth</option>
+					                                          
+				                                                	<option value="111_PASC">Oradell</option>
+					                                          
+				                                                	<option value="112_MNE">Orange</option>
+					                                          
+				                                                	<option value="113_MNBN">Otisville</option>
+					                                          
+				                                                	<option value="114_PASC">Park Ridge</option>
+					                                          
+				                                                	<option value="115_MNBN">Passaic</option>
+					                                          
+				                                                	<option value="116_MNBN">Paterson</option>
+					                                          
+				                                                	<option value="117_MNE">Peapack</option>
+					                                          
+				                                                	<option value="118_PASC">Pearl River</option>
+					                                          
+				                                                	<option value="43298_ATLC">Pennsauken Transit Center</option>
+					                                          
+				                                                	<option value="119_NJCL">Perth Amboy</option>
+					                                          
+				                                                	<option value="1_ATLC">Philadelphia 30th Street</option>
+					                                          
+				                                                	<option value="120_RARV">Plainfield</option>
+					                                          
+				                                                	<option value="121_MNBN">Plauderville</option>
+					                                          
+				                                                	<option value="122_NJCL">Point Pleasant Beach</option>
+					                                          
+				                                                	<option value="123_MNBN">Port Jervis</option>
+					                                          
+				                                                	<option value="124_PRIN">Princeton</option>
+					                                          
+				                                                	<option value="125_NEC">Princeton Junction</option>
+					                                          
+				                                                	<option value="126_MNBN">Radburn</option>
+					                                          
+				                                                	<option value="127_NEC">Rahway</option>
+					                                          
+				                                                	<option value="128_MNBN">Ramsey</option>
+					                                          
+				                                                	<option value="38417_MNBN">Ramsey Route 17</option>
+					                                          
+				                                                	<option value="129_RARV">Raritan</option>
+					                                          
+				                                                	<option value="130_NJCL">Red Bank</option>
+					                                          
+				                                                	<option value="131_MNBN">Ridgewood</option>
+					                                          
+				                                                	<option value="132_PASC">River Edge</option>
+					                                          
+				                                                	<option value="31_RARV">Roselle Park</option>
+					                                          
+				                                                	<option value="134_MNBN">Rutherford</option>
+					                                          
+				                                                	<option value="135_MNBN">Salisbury Mills Cornwall</option>
+					                                          
+				                                                	<option value="38174_BNTN">Secaucus Junction</option>
+					                                          
+				                                                	<option value="136_MNE">Short Hills</option>
+					                                          
+				                                                	<option value="137_MNBN">Sloatsburg</option>
+					                                          
+				                                                	<option value="138_RARV">Somerville</option>
+					                                          
+				                                                	<option value="139_NJCL">South Amboy</option>
+					                                          
+				                                                	<option value="140_MNE">South Orange</option>
+					                                          
+				                                                	<option value="141_NJCL">Spring Lake</option>
+					                                          
+				                                                	<option value="142_PASC">Spring Valley</option>
+					                                          
+				                                                	<option value="143_MNE">Stirling</option>
+					                                          
+				                                                	<option value="144_MNBN">Suffern</option>
+					                                          
+				                                                	<option value="145_MNE">Summit</option>
+					                                          
+				                                                	<option value="146_PASC">Teterboro</option>
+					                                          
+				                                                	<option value="147_BNTN">Towaco</option>
+					                                          
+				                                                	<option value="148_NEC">Trenton Transit Center</option>
+					                                          
+				                                                	<option value="149_MNBN">Tuxedo</option>
+					                                          
+				                                                	<option value="38105_RARV">Union</option>
+					                                          
+				                                                	<option value="150_BNTN">Upper Montclair</option>
+					                                          
+				                                                	<option value="151_MNBN">Waldwick</option>
+					                                          
+				                                                	<option value="152_BNTN">Walnut Street</option>
+					                                          
+				                                                	<option value="153_BNTN">Watchung Avenue</option>
+					                                          
+				                                                	<option value="154_BNTN">Watsessing Avenue</option>
+					                                          
+				                                                	<option value="39635_BNTN">Wayne/Route 23 Transit Center</option>
+					                                          
+				                                                	<option value="155_RARV">Westfield</option>
+					                                          
+				                                                	<option value="156_PASC">Westwood</option>
+					                                          
+				                                                	<option value="157_RARV">White House</option>
+					                                          
+				                                                	<option value="160_PASC">Wood Ridge</option>
+					                                          
+				                                                	<option value="158_NJCL">Woodbridge</option>
+					                                          
+				                                                	<option value="159_PASC">Woodcliff Lake</option>
+					                                          
+			                              </select></span><br>
+			                              <a style="font-size:7pt;" href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=TrainTo#" onclick="showStationInfo(document.frm_tr_schedules.selDestination)">Get Station Info</a>
+			                              <!-- <input type=button value="Station Information" onClick="showStationInfo(document.frm_tr_schedules.selDestination)">-->
+			                        </td>
+			                  </tr>
+			                  <tr>
+			                        <td valign="top" align="right"><span class="emphasis">Date of Travel : </span></td>
+			                        <td colspan="1" valign="top" align="left">
+								<input name="datepicker" type="text" autocomplete="on" class="datepicker dp-applied" id="datepicker" title="">
+								<!-- <br>-->
+			                              <!-- <a style="font-size:7pt;" href="#" onClick="showHolidayWindow()">Holiday Travel Note</a>-->
+			                              <!-- <input type=button value="Holiday Travel Note" onClick="showHolidayWindow()">-->
+			                        </td>
+			                  </tr>
+ 							<tr>
+								<td colspan="2" style="height:0px; *height:5px;"><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="1" width="1" alt=""></td>
+							</tr>
+			                  <tr>
+			                        <td colspan="2" align="center"><input type="submit" value="View Schedule" onclick="return check()"></td>
+			                  </tr>
+			                  </tbody></table>
+			                  <input type="hidden" name="OriginDescription" value="">
+						<input type="hidden" name="DestDescription" value="">
+					</form>
+				</div>
+			</div>
+		</div>
+            </td>
+		<td valign="top">
+			  <div class="AccordionRecentTrips" tabindex="0">
+		 		<div class="AccordionPanel">
+		            	<div class="AccordionPanelTab">Your Recent Saved Trips</div>
+		            	<div class="AccordionPanelContent" style="height:180px;margin-left:15px; margin-right:15px; *height:210px; *margin-top:10px;">	
+		
+					You currently have no saved trips.<br><br>If you travel frequently between two stations, you can save your trip for even faster searching. <br><br> To save a trip, first select your origin and destination, and click View Schedule.  Then, on the results page, select "Save This Trip" in the Trip Tools box.
+
+		</div></div></div></td>
+            
+		<td>
+			  <div class="AccordionTimeTables" tabindex="0">
+		 		<div class="AccordionPanel">
+		            <div class="AccordionPanelTab">Trip Tools</div>
+		            	<div style="margin-left: 30px;" id="homepage-box5">
+							<div id="homepage-box5-inner">
+								<div id="popdest_tab1">
+									<ul>
+										<li style="*padding: 1px 0 0 10px;"><a href="http://www.njtransit.com/sa/sa_servlet.srv?hdnPageAction=TravelAlertsTo">Alerts &amp; Advisories</a></li>
+										<br><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="1" width="1" alt="">
+										<li style="*padding: 1px 0 0 10px;"><a href="http://www.njtransit.com/sf/sf_servlet.srv?hdnPageAction=TripPlannerServiceNearTo">Service Near a Location</a></li>
+										<br><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="1" width="1" alt="">
+										<li style="*padding: 1px 0 0 10px;"><a href="http://www.njtransit.com/ti/ti_servlet.srv?hdnPageAction=RailTicketsTo">Ticketing Options</a></li>
+										<br><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="1" width="1" alt="">
+										<li style="*padding: 1px 0 0 10px;"><a href="http://www.njtransit.com/rg/rg_servlet.srv?hdnPageAction=ConnectionsTo">Connecting Services</a></li>
+										<br><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="1" width="1" alt="">
+										<li style="*padding: 1px 0 0 10px;"><a href="http://www.njtransit.com/ti/ti_servlet.srv?hdnPageAction=GroupTravelTo">Group Trips</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+				</div>
+			</div>		
+		</td>                 
+	</tr>
+	<tr>
+		<td colspan="3">
+			  <div class="AccordionCurrentSchedules" tabindex="0">
+		 		<div class="AccordionPanel">
+		            	<div class="AccordionPanelTab">Current PDF Schedules. <span style="color:red;">For Printable Schedules, click <a href="http://www.njtransit.com/sa/sa_servlet.srv?hdnPageAction=ServiceAdjustmentTo&AdjustmentId=9792"><b>HERE</b></a></span></div>
+		            	<div class="AccordionPanelContent" style="position:relative; height:50px;*height:60px; top:-2px; *top:4px;">	
+						<table align="center" summary="This table displays additional information" cellpadding="2" cellspacing="2" border="0">
+							<tbody><tr>
+							
+									<td width="220" valign="top"><a href="http://www.njtransit.com/pdf/rail/r0090.pdf" target="_blank" onclick="javascript:urchinTracker(&#39;/RailPDF/r0090.pdf&#39;);">Atlantic City Rail Line (533kb)</a></td>
+									
+									<td width="220" valign="top"><a href="http://www.njtransit.com/pdf/rail/r0020.pdf" target="_blank" onclick="javascript:urchinTracker(&#39;/RailPDF/r0020.pdf&#39;);">Main-Bergen County Line (948kb)</a></td>
+									
+									<td width="220" valign="top"><a href="http://www.njtransit.com/pdf/rail/r0030.pdf" target="_blank" onclick="javascript:urchinTracker(&#39;/RailPDF/r0030.pdf&#39;);">Montclair-Boonton Line (706kb)</a></td>
+									
+									<td width="220" valign="top"><a href="http://www.njtransit.com/pdf/rail/r0040.pdf" target="_blank" onclick="javascript:urchinTracker(&#39;/RailPDF/r0040.pdf&#39;);">Morris and Essex Line (1087kb)</a></td>
+									
+										</tr>
+										<tr><td colspan="4"><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="3" width="15" alt=""></td></tr>
+										<tr>
+									
+									<td width="220" valign="top"><a href="http://www.njtransit.com/pdf/rail/r0080.pdf" target="_blank" onclick="javascript:urchinTracker(&#39;/RailPDF/r0080.pdf&#39;);">North Jersey Coast Line (692kb)</a></td>
+									
+									<td width="220" valign="top"><a href="http://www.njtransit.com/pdf/rail/r0070.pdf" target="_blank" onclick="javascript:urchinTracker(&#39;/RailPDF/r0070.pdf&#39;);">Northeast Corridor (733kb)</a></td>
+									
+									<td width="220" valign="top"><a href="http://www.njtransit.com/pdf/rail/r0010.pdf" target="_blank" onclick="javascript:urchinTracker(&#39;/RailPDF/r0010.pdf&#39;);">Pascack Valley Line (618kb)</a></td>
+									
+									<td width="220" valign="top"><a href="http://www.njtransit.com/pdf/rail/r0060.pdf" target="_blank" onclick="javascript:urchinTracker(&#39;/RailPDF/r0060.pdf&#39;);">Raritan Valley Line (497kb)</a></td>
+									
+							</tr>						
+						</tbody></table>
+					</div>
+					
+				</div>
+			</div>		
+			
+		</td>
+	</tr>	
+	
+		 		
+    </tbody></table>
+
+
+<script language="javascript">
+$(document).ready(function()
+{		 
+/*	var loadDate = $('.datepicker').dpGetSelected();
+	
+	if ( loadDate > 0 )
+	{
+		$('.datepicker').dpSetSelected(''); //wipe out
+		
+		myDate1 = new Date( loadDate ); 
+		$('.datepicker').dpSetSelected(myDate1.asString()); //reset
+	}
+	else
+	{
+		$('.datepicker').dpSetSelected(new Date().asString());
+	}
+*/
+	
+		//document.frm_tr_schedules.selOrigin.selectedIndex = 0;
+	
+	
+		//document.frm_tr_schedules.selDestination.selectedIndex = 0;
+	
+	//$('.datepicker').dpSetSelected(''); //wipe out
+	//$('.datepicker').dpSetSelected(new Date().asString());
+});    
+  
+$(function()
+{
+	$('.datepicker').datePicker(
+		{
+			startDate: (new Date()).asString(),
+			endDate: '10/25/2015'
+		}
+	);
+});
+</script>
+
+
+					
+					</td>				</tr>				<tr><td height="10"></td></tr>			</tbody></table>		</td>	 	<td valign="top" style="width:13px; height:400px; background-image:url(http://www.njtransit.com/images/spacer.gif)"></td>	</tr></tbody></table></div><!-- ######################################################################							END PAGE CONTENT######################################################################### --> <div id="njt_ftrcntnt"><div id="njt_ftrcntntinner">	<div id="ftr-weather" style="visibility:visible"><div id="njt_ftrwthr1"><img src="http://www.njtransit.com/images/28ds.png"></div><div id="njt_ftrwthr2"><div id="njt_ftrwthr3"><span class="notranslate"></span></div><div id="njt_ftrwthr4"><div><span class="notranslate"><span style="padding-left:7px"></span></span></div><div style="clear:left; line-height: 13px"><span style="padding-right:6px"></span><a href="http://www.weather.com/weather/tenday/40.735657,-74.172367" target="_blank" style="text-decoration: none; color: #2A69A6;">Weather forecast</a></div></div></div></div>	<div id="ftr-social">		<img src="http://www.njtransit.com/images/social-intro.gif" alt="" border="0">		<a href="http://www.twitter.com/NJTRANSIT" target="_blank"><img src="http://www.njtransit.com/images/social_t.gif"></a>		<img src="http://www.njtransit.com/images/spacer.gif" alt="" width="10" height="5" border="0">		<a href="http://www.facebook.com/NJTRANSIT" target="_blank"><img src="http://www.njtransit.com/images/social_f.gif"></a>		<img src="http://www.njtransit.com/images/spacer.gif" alt="" width="7" height="5" border="0">		<a href="http://www.youtube.com/TheNewJerseyTransit" target="_blank"><img src="http://www.njtransit.com/images/social_y.gif"></a>		<img src="http://www.njtransit.com/images/spacer.gif" alt="" width="20" height="5" border="0">	</div>	<div class="njt_clear"></div>	<div class="njt_divline" style="background-color:#ebebeb;margin-top:3px"></div>	<div class="njt_ftrnvlnks">		<div>			<a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=CorpInfoTo">About Us</a>			|			<a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=NJTNewsTo">News</a>			|			<a href="http://www.njtransit.com/transitarts">Transit Arts</a>			|			<a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=CapProjectsTo">Capital Projects</a>			|			<a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=CareersTo">Careers</a>			|			<a href="https://www.njtransit.com/developer">Developers</a>			|			<a href="http://www.njtransit.com/civilrights">Civil Rights</a>			|			<a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=DoingBusinessTo">Doing Business</a>			|			<a href="http://www.njtransit.com/po/po_servlet.srv?hdnPageAction=PoliceHomeTo">Police</a>			|			<a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=SiteMapTo">Site Map</a>			|			<a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=OpraTo">OPRA</a>		</div>	</div>	<div class="njt_ftrdivl2"></div>	<div class="njt_ftrlnggcntr">		<div id="google_translate_element">			<div id="gtranslate"><a href="javascript:void(0)">Translate this Site</a><img src="http://www.njtransit.com/images/spacer.gif" alt="" width="60" height="5" border="0"></div>		</div>	</div>	<div class="njt_ftrlgcpy">		<img src="http://www.njtransit.com/images/spacer.gif" alt="" width="30" height="5" border="0">		© 2015 NJ TRANSIT. All Rights Reserved. <a href="http://www.njtransit.com/tm/tm_servlet.srv?hdnPageAction=CopyrightTo" class="copyright" style="text-decoration: none;">Terms of use</a>	</div>	<div class="njt_clear"></div></div></div></div><div class="njt_borderbottom"></div><script type="text/javascript">var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1");var MenuBar2 = new Spry.Widget.MenuBar("MenuBar2");var MenuBar3 = new Spry.Widget.MenuBar("MenuBar3");var MenuBar4 = new Spry.Widget.MenuBar("MenuBar4");var MenuBar5 = new Spry.Widget.MenuBar("MenuBar5");var MenuBar6 = new Spry.Widget.MenuBar("MenuBar6");</script><script src="https://ssl.google-analytics.com/urchin.js" type="text/javascript"></script><script type="text/javascript">_uacct = "UA-3154326-1";urchinTracker();</script><script type="text/javascript" src="http://www.njtransit.com//javascript/jquery-1.7.1.min.js"></script><script type="text/javascript" src="http://www.njtransit.com//javascript/jquery.simpleWeather.js"></script><script>window.hasOwnProperty = window.hasOwnProperty || Object.prototype.hasOwnProperty;function googleTranslateElementInitS() {  new google.translate.TranslateElement({    pageLanguage: 'en',    includedLanguages: 'zh-TW,en,fr,de,hi,it,ko,pt,es,ja',    autoDisplay: false,    gaTrack: true,    gaId: 'UA-3154326-1',    layout: google.translate.TranslateElement.InlineLayout.SIMPLE  }, 'google_translate_element');}function googleTranslateElementInitV() {  new google.translate.TranslateElement({    pageLanguage: 'en',    includedLanguages: 'zh-TW,en,fr,de,hi,it,ko,pt,es,ja',    autoDisplay: false,    gaTrack: true,    gaId: 'UA-3154326-1',    layout: google.translate.TranslateElement.InlineLayout.VERTICAL  }, 'google_translate_element');}function getCookie(c_name){var i,x,y,ARRcookies=document.cookie.split(";");for (i=0;i<ARRcookies.length;i++){  x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));  y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);  x=x.replace(/^\s+|\s+$/g,"");  if (x==c_name)    {    return unescape(y);    }  }}var $j = jQuery.noConflict();$j(document).ready(function(){		var googtrans = getCookie("googtrans");	if (googtrans != null && googtrans != "/en/en") {		$j.getScript(window.location.protocol + '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInitV');		$j('#gtranslate').hide();	}	$j('#gtranslate').click(function() {	       	$j.getScript(window.location.protocol + '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInitV');		$j('#gtranslate').hide();	});	$j('#clicksearch').click(function() {				$j('#hdrfrmSearch').submit();	});	$j.simpleWeather({        zipcode: '07105',        unit: 'f',        success: function(weather) {                html = '<div id="njt_ftrwthr1"><img src="'+weather.thumbnail+'"></div><div id="njt_ftrwthr2"><div id="njt_ftrwthr3"><span class="notranslate">'+weather.temp+'&deg;</span></div><div id="njt_ftrwthr4"><div><span class="notranslate">HI '+weather.high+'&deg;<span style="padding-left:7px">LO '+weather.low+'&deg;</span></span></div><div style="clear:left; line-height: 13px"><span style="padding-right:6px">'+weather.city+', '+weather.region+'</span><a href="http://www.weather.com/weather/tenday/40.735657,-74.172367" target="_blank" style="text-decoration: none; color: #2A69A6;">Weather forecast</a></div></div></div>';                $j("#ftr-weather").html(html);        },        error: function(error) {                $j("#ftr-weather").html("");        }	});});</script><script type="text/javascript" src="http://translate.google.com/translate_a/element.js"></script><script type="text/javascript" src="http://www.njtransit.com//javascript/qm.js"></script><script type="text/javascript" src="http://www.njtransit.com//javascript/qm_pure_css.js"></script><script type="text/javascript">qm_create(0,false,0,250,false,false,false,false);</script><style>.goog-te-balloon-frame{display: none !important;  box-shadow: none !important; -moz-box-shadow: none !important; -webkit-box-shadow none !important;}font{background: transparent !important;}.goog-te-balloon{display: none !important;}#goog-gt-tt{display: none !important; text-decoration:none; box-shadow: none !important; -moz-box-shadow: none !important; -webkit-box-shadow none !important;}font{background: transparent !important;}#goog-gt-tt .status-message {text-shadow: none !important;}#goog-gt-tt .alt-menu, .goog-text-highlight, #goog-gt-tt .trans-target-highlight, #alt-input-text:hover, #alt-input-text:focus {box-shadow: none !important; -moz-box-shadow: none !important; -webkit-box-shadow none !important;}body {top: 0px !important; position: static !important; }.goog-te-banner-frame{display: none !important;}.goog-logo-link{display: none !important;}.goog-te-gadget{height: 24px !important; *height: 20px !important; width:154px; *width:168px; overflow: hidden; background:#ffffff url(http://www.njtransit.com/images/gtranslate_select.gif) no-repeat left top; background-position: 2px 2px; *background-position: 2px 0px;}.goog-te-combo{height: 22px !important; width:130px; *width:145px; margin: 1px 0 1px 0 !important; *margin: 0 0 0 0 !important; padding: 2px; *padding: 0 0 0 0; font-size: 8pt; border: 0 none !important; *position: relative; *top: -1px;}a.goog-te-menu-value{    text-decoration: none;}#gtranslate{ 	margin: 5px 0 0 0;	font-weight: bold;}html{	background: none;}</style><!-- Pat Battersby  retargeting pixel Dates: June 29 - August 30, 2015 --><script type="text/javascript">var ssaUrl = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'pixel.sitescout.com/iap/1e9fba1b0b1bc01b';new Image().src = ssaUrl;</script></body></html>
