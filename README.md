@@ -9,4 +9,4 @@ This is a collection of these alternatives, which are showcased on [ifixedyourwe
 
 When both these conditions are met, then the website is "laughably busted".
 
-Contributions are welcome.  Be sure to include a "whatifixed.md" file describing why your version is better than the original.
+Contributions are welcome on [github](https://github.com/arikast/ifixedyourwebsite).  Be sure to include a "whatifixed.md" file describing why your version is better than the original.
