@@ -1,6 +1,6 @@
 # The Idea
 Some websites are just so laughably busted that you feel compelled to offer an alternative.
-This is a collection of these alternatives.
+This is a collection of these alternatives, which are showcased on [ifixedyourcode.com](http://ifixedyourwebsite.com).
 
 ## What precisely elevates a website's dysfunction to the level of "laughable"?  
 
