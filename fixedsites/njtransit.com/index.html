@@ -36,6 +36,15 @@
             newwin.focus();
       }
       
+      function reverseTrip(){	
+            var from = document.frm_tr_schedules.selOrigin;
+            var to = document.frm_tr_schedules.selDestination;
+               
+            var fromIndex = from.selectedIndex;
+            from.selectedIndex = to.selectedIndex;
+            to.selectedIndex = fromIndex;
+      }
+
       function check(){	
             if(!(isSelected(document.frm_tr_schedules.selOrigin,"Origin Station"))
             ||!(isSelected(document.frm_tr_schedules.selDestination,"Destination Station"))){
@@ -994,7 +1003,10 @@ min-height: 50px;
 								<td colspan="2" style="height:0px; *height:5px;"><img src="http://www.njtransit.com/images/spacer.gif" border="0" height="1" width="1" alt=""></td>
 							</tr>
 			                  <tr>
-			                        <td colspan="2" align="center"><input type="submit" value="View Schedule" onclick="return check()"></td>
+			                        <td colspan="2" align="center">
+                                        <input type="submit" value="View Schedule" onclick="return check()">
+                                        <input type="button" value="Reverse Trip" onclick="reverseTrip()">
+                                    </td>
 			                  </tr>
 			                  </tbody></table>
 			                  <input type="hidden" name="OriginDescription" value="">
